@@ -6,34 +6,32 @@ namespace GameOfLife
     class Program
     {
         enum State { ACTIVE, INACTIVE }
+        static State state = State.INACTIVE;
+
+        const int SCREEN_WIDTH = 800;
+        const int SCREEN_HEIGHT = 600;
+
+        static double simulationSpeed = 10.0;
+        static double accumulator = 0.0;
+
+        static int gridWidth = 160;
+        static int gridHeight = 120;
+
+        static int cellWidth;
+        static int cellHeight;
 
         static void Main(string[] args)
         {
-            InitWindow(800, 600, "Conway's Game of Life");
-            State state = State.INACTIVE;
-
-            double simulationSpeed = 10.0;
-            double accumulator = 0.0;
-
-            int gridWidth = 160;
-            int gridHeight = 120;
+            InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Conway's Game of Life");
 
             Cell[,] grid = new Cell[gridWidth, gridHeight];
 
-            int cellWidth = GetScreenWidth() / gridWidth;
-            int cellHeight = GetScreenHeight() / gridHeight;
+            cellWidth = SCREEN_WIDTH / gridWidth;
+            cellHeight = SCREEN_HEIGHT / gridHeight;
 
             for (int x = 0; x < gridWidth; x++)
-            {
                 for (int y = 0; y < gridHeight; y++)
-                {
-                    grid[x, y] = new Cell(x, y, cellWidth, cellHeight, 0, false);
-                    grid[x, y].X = x * cellWidth;
-                    grid[x, y].Y = y * cellHeight;
-                    grid[x, y].Width = cellWidth;
-                    grid[x, y].Height = cellHeight;
-                }
-            }
+                    InitGrid(grid, x, y, cellWidth, cellHeight);
 
             while (!WindowShouldClose())
             {
@@ -41,54 +39,7 @@ namespace GameOfLife
                 double deltaTime = GetFrameTime();
                 accumulator += deltaTime;
 
-                if (IsMouseButtonDown(MouseButton.MOUSE_LEFT_BUTTON))
-                {
-                    int cellX = GetMouseX() / cellWidth;
-                    int cellY = GetMouseY() / cellHeight;
-
-                    if (cellX >= 0 && cellX < gridWidth && cellY >= 0 && cellY < gridHeight)
-                    {
-                        Cell cell = grid[cellX, cellY];
-                        cell.IsAlive = true;
-                    }
-                }
-
-                if (IsMouseButtonDown(MouseButton.MOUSE_RIGHT_BUTTON))
-                {
-                    int cellX = GetMouseX() / cellWidth;
-                    int cellY = GetMouseY() / cellHeight;
-
-                    if (cellX >= 0 && cellX < gridWidth && cellY >= 0 && cellY < gridHeight)
-                    {
-                        Cell cell = grid[cellX, cellY];
-                        cell.IsAlive = false;
-                    }
-                }
-
-                if (IsKeyPressed(KeyboardKey.KEY_SPACE) && state == State.INACTIVE)
-                    state = State.ACTIVE;
-
-                else if (IsKeyPressed(KeyboardKey.KEY_SPACE) && state == State.ACTIVE)
-                    state = State.INACTIVE;
-
-                if (IsKeyPressed(KeyboardKey.KEY_RIGHT))
-                    simulationSpeed += 5.0;
-
-                if (IsKeyPressed(KeyboardKey.KEY_LEFT) && simulationSpeed > 0)
-                    simulationSpeed -= 5.0;
-
-                if (IsKeyPressed(KeyboardKey.KEY_C))
-                    for (int x = 0; x < gridWidth; x++)
-                    {
-                        for (int y = 0; y < gridHeight; y++)
-                        {
-                            grid[x, y] = new Cell(x, y, cellWidth, cellHeight, 0, false);
-                            grid[x, y].X = x * cellWidth;
-                            grid[x, y].Y = y * cellHeight;
-                            grid[x, y].Width = cellWidth;
-                            grid[x, y].Height = cellHeight;
-                        }
-                    }
+                Input(grid);
 
                 while (accumulator >= timeStep)
                 {
@@ -100,11 +51,7 @@ namespace GameOfLife
                         {
                             for (int y = 0; y < gridHeight; y++)
                             {
-                                newGrid[x, y] = new Cell(x, y, cellWidth, cellHeight, 0, false);
-                                newGrid[x, y].X = x * cellWidth;
-                                newGrid[x, y].Y = y * cellHeight;
-                                newGrid[x, y].Width = cellWidth;
-                                newGrid[x, y].Height = cellHeight;
+                                InitGrid(newGrid, x, y, cellWidth, cellHeight);
 
                                 int liveNeighbors = 0;
 
@@ -164,12 +111,70 @@ namespace GameOfLife
 
                 DrawText("Speed:", 15, 40, 20, Color.LIGHTGRAY);
                 DrawText("" + simulationSpeed, 90, 40, 20, Color.LIGHTGRAY);
-
                 DrawText("C to Clear", 15, 65, 20, Color.LIGHTGRAY);
 
                 EndDrawing();
             }
             CloseWindow();
+        }
+
+        static void InitGrid(Cell[,] grid, int x, int y, int cellWidth, int cellHeight)
+        {
+            grid[x, y] = new Cell(x, y, cellWidth, cellHeight, 0, false);
+            grid[x, y].X = x * cellWidth;
+            grid[x, y].Y = y * cellHeight;
+            grid[x, y].Width = cellWidth;
+            grid[x, y].Height = cellHeight;
+        }
+
+        static void Input(Cell[,] grid)
+        {
+            if (IsMouseButtonDown(MouseButton.MOUSE_LEFT_BUTTON))
+            {
+                int cellX = GetMouseX() / cellWidth;
+                int cellY = GetMouseY() / cellHeight;
+
+                if (cellX >= 0 && cellX < gridWidth && cellY >= 0 && cellY < gridHeight)
+                {
+                    Cell cell = grid[cellX, cellY];
+                    cell.IsAlive = true;
+                }
+            }
+
+            if (IsMouseButtonDown(MouseButton.MOUSE_RIGHT_BUTTON))
+            {
+                int cellX = GetMouseX() / cellWidth;
+                int cellY = GetMouseY() / cellHeight;
+
+                if (cellX >= 0 && cellX < gridWidth && cellY >= 0 && cellY < gridHeight)
+                {
+                    Cell cell = grid[cellX, cellY];
+                    cell.IsAlive = false;
+                }
+            }
+
+            if (IsKeyPressed(KeyboardKey.KEY_SPACE) && state == State.INACTIVE)
+                state = State.ACTIVE;
+
+            else if (IsKeyPressed(KeyboardKey.KEY_SPACE) && state == State.ACTIVE)
+                state = State.INACTIVE;
+
+            if (IsKeyPressed(KeyboardKey.KEY_RIGHT))
+                simulationSpeed += 5.0;
+
+            if (IsKeyPressed(KeyboardKey.KEY_LEFT) && simulationSpeed > 0)
+                simulationSpeed -= 5.0;
+
+            if (IsKeyPressed(KeyboardKey.KEY_C))
+            {
+                for (int x = 0; x < gridWidth; x++)
+                {
+                    for (int y = 0; y < gridHeight; y++)
+                    {
+                        grid[x, y].IsAlive = false;
+                    }
+                }
+            }
         }
     }
 }
