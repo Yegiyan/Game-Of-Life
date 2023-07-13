@@ -31,7 +31,7 @@ namespace GameOfLife
 
             for (int x = 0; x < gridWidth; x++)
                 for (int y = 0; y < gridHeight; y++)
-                    InitGrid(grid, x, y, cellWidth, cellHeight);
+                    InitGrid(grid, x, y);
 
             while (!WindowShouldClose())
             {
@@ -51,7 +51,7 @@ namespace GameOfLife
                         {
                             for (int y = 0; y < gridHeight; y++)
                             {
-                                InitGrid(newGrid, x, y, cellWidth, cellHeight);
+                                InitGrid(newGrid, x, y);
 
                                 int liveNeighbors = 0;
 
@@ -118,7 +118,7 @@ namespace GameOfLife
             CloseWindow();
         }
 
-        static void InitGrid(Cell[,] grid, int x, int y, int cellWidth, int cellHeight)
+        static void InitGrid(Cell[,] grid, int x, int y)
         {
             grid[x, y] = new Cell(x, y, cellWidth, cellHeight, 0, false);
             grid[x, y].X = x * cellWidth;
