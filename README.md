@@ -3,6 +3,8 @@
 **A recreation of a cellular automaton devised by the British mathematician John Horton Conway. 
 Created in Visual Studio 2022 using C# and Raylib.**
 
+* Press left mouse button to create cell
+* Press right mouse button to kill cell
 * Press left/right arrow keys to control simulation speed
 * Press spacebar to start/stop simulation
 * Press C to clear grid
