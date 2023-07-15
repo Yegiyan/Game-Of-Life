@@ -1,5 +1,6 @@
 ﻿using static Raylib_cs.Raylib;
 using Raylib_cs;
+using System.Diagnostics;
 
 namespace GameOfLife
 {
@@ -109,9 +110,7 @@ namespace GameOfLife
                 if (state == State.INACTIVE) DrawText("INACTIVE", 125, 15, 20, Color.RED);
                 if (state == State.ACTIVE) DrawText("ACTIVE", 125, 15, 20, Color.GREEN);
 
-                DrawText("Speed:", 15, 40, 20, Color.LIGHTGRAY);
-                DrawText("" + simulationSpeed, 90, 40, 20, Color.LIGHTGRAY);
-                DrawText("C to Clear", 15, 65, 20, Color.LIGHTGRAY);
+                DrawText("Speed: " + simulationSpeed, 15, 40, 20, Color.LIGHTGRAY);
 
                 EndDrawing();
             }
